@@ -61,3 +61,50 @@ def readDataFile(datafile, columns, onlyWlType):
         return newheader, newdata
     
     return header, data
+
+def createDataSeries(rawdata, datacols, plotType, fixWls, onlyWlNum):
+    dataseries =[[] for i in range(datacols+1)]
+    
+    for l in rawdata:
+        for i in range(datacols+1):
+            if plotType == "scatter":
+                dataseries[i].append(l[i])
+            elif l[i] != NO_DATA_STRING:
+                dataseries[i].append(l[i])
+
+    if fixWls:
+        newWls = []
+        for wlbm in dataseries[0]:
+            wlbmlist = wlbm.split("-")
+            wl = wlbmlist[1]+"-"+wlbmlist[2]
+            
+            if wlbmlist[-2] == "s6":
+                bm = wlbmlist[-2]+"-"+wlbmlist[-1]
+            else:
+                bm = wlbmlist[-1][:-1]
+            
+            newWls.append(wl+"_"+bm)
+            
+        dataseries[0] = newWls
+        
+    if onlyWlNum:
+        newWls = []
+        for wl in dataseries[0]:
+            tmp = wl.split("-")
+            newWls.append(tmp[-1])
+        
+        dataseries[0] = newWls
+
+    return dataseries
+
+def getScatterData(dataseries):
+    xdata = [[] for i in range(len(dataseries)-1)]
+    ydata = [[] for i in range(len(dataseries)-1)]
+    
+    for i in range(len(dataseries[1:])):
+        for j in range(len(dataseries[0])):
+            if dataseries[i+1][j] != NO_DATA_STRING:
+                xdata[i].append(dataseries[0][j])
+                ydata[i].append(dataseries[i+1][j])
+                
+    return xdata, ydata

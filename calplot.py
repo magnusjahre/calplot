@@ -8,7 +8,7 @@ Created on May 15, 2018
 
 from optparse import OptionParser
 from calplotCore import fatal, NO_DATA_STRING
-from calplotCore.io import readDataFile
+from calplotCore.io import readDataFile, createDataSeries, getScatterData
 from calplotCore.plot import boxPlot, plotLines, barChart, violinPlot, scatterPlot
 
 def parseArgs():
@@ -71,41 +71,6 @@ def parseArgs():
     
     return opts, args, datafiles
 
-def createDataSeries(rawdata, datacols, opts):
-    dataseries =[[] for i in range(datacols+1)]
-    
-    for l in rawdata:
-        for i in range(datacols+1):
-            if opts.plotType == "scatter":
-                dataseries[i].append(l[i])
-            elif l[i] != NO_DATA_STRING:
-                dataseries[i].append(l[i])
-
-    if opts.fixWls:
-        newWls = []
-        for wlbm in dataseries[0]:
-            wlbmlist = wlbm.split("-")
-            wl = wlbmlist[1]+"-"+wlbmlist[2]
-            
-            if wlbmlist[-2] == "s6":
-                bm = wlbmlist[-2]+"-"+wlbmlist[-1]
-            else:
-                bm = wlbmlist[-1][:-1]
-            
-            newWls.append(wl+"_"+bm)
-            
-        dataseries[0] = newWls
-        
-    if opts.onlyWlNum:
-        newWls = []
-        for wl in dataseries[0]:
-            tmp = wl.split("-")
-            newWls.append(tmp[-1])
-        
-        dataseries[0] = newWls
-
-    return dataseries
-
 def generatePlotCommand(data):
     cmd = ["plotDataFile.py"]
     cmd.append("--plot-type")
@@ -123,18 +88,6 @@ def generatePlotCommand(data):
     
     return " ".join(cmd)
 
-def getScatterData(dataseries):
-    xdata = [[] for i in range(len(dataseries)-1)]
-    ydata = [[] for i in range(len(dataseries)-1)]
-    
-    for i in range(len(dataseries[1:])):
-        for j in range(len(dataseries[0])):
-            if dataseries[i+1][j] != NO_DATA_STRING:
-                xdata[i].append(dataseries[0][j])
-                ydata[i].append(dataseries[i+1][j])
-                
-    return xdata, ydata
-
 def main():
 
     opts, args, datafiles = parseArgs()
@@ -146,18 +99,8 @@ def main():
     for i in range(len(datafiles)):
         print "Processing file plot of file "+args[i]
         
-        thisHeader, thisData = readDataFile(datafiles[i], opts.columns, opts.onlyType)
-        series = createDataSeries(thisData, len(thisHeader), opts)
-        
-        if opts.plotType != "boxes":
-            dataseries = series
-            header = thisHeader
-        else:
-            for s in series[1:]:
-                dataseries.append(s)
-                
-            for h in thisHeader:
-                header.append(h)
+        header, rawData = readDataFile(datafiles[i], opts.columns, opts.onlyType)
+        dataseries = createDataSeries(rawData, len(header), opts.plotType, opts.fixWls, opts.onlyWlNum)
     
     if opts.avg:
         for i in range(len(dataseries)):
@@ -187,44 +130,45 @@ def main():
     
     if opts.plotType == "lines":
         plotLines(dataseries[0], dataseries[1:],
-                        titles=header,
-                        filename=opts.outfile,
-                        xlabel=opts.xtitle,
-                        ylabel=opts.ytitle,
-                        legendColumns=opts.legendColumns,
-                        yrange=opts.yrange,
-                        xrange=opts.xrange,
-                        figheight=opts.figheight,
-                        figwidth=opts.figwidth,
-                        markEvery=opts.markEvery,
-                        largeFonts=opts.largeFonts,
-                        divFactor=opts.divFactor,
-                        labels=opts.labels,
-                        separators=opts.separators,
-                        fillBackground=opts.fillBackground,
-                        rotate=opts.rotate)
+                  titles=header,
+                  filename=opts.outfile,
+                  xlabel=opts.xtitle,
+                  ylabel=opts.ytitle,
+                  legendColumns=opts.legendColumns,
+                  yrange=opts.yrange,
+                  xrange=opts.xrange,
+                  figheight=opts.figheight,
+                  figwidth=opts.figwidth,
+                  markEvery=opts.markEvery,
+                  largeFonts=opts.largeFonts,
+                  divFactor=opts.divFactor,
+                  labels=opts.labels,
+                  separators=opts.separators,
+                  fillBackground=opts.fillBackground,
+                  rotate=opts.rotate)
         
     elif opts.plotType == "bars":
         barChart(dataseries[0],
-                             dataseries[1:],
-                             header,
-                             filename=opts.outfile,
-                             xlabel=opts.xtitle,
-                             ylabel=opts.ytitle,
-                             legendColumns=opts.legendColumns,
-                             legendBBoxHeight=opts.legendBBoxHeight,
-                             yrange=opts.yrange,
-                             errorrows=opts.errorrows,
-                             errorcols=opts.errorcols,
-                             rotate=opts.rotate,
-                             datalabels=opts.datalabels,
-                             figheight=opts.figheight,
-                             figwidth=opts.figwidth,
-                             mode=usemode,
-                             separators=opts.separators,
-                             linemarkers=opts.linemarkers,
-                             labels=opts.labels,
-                             fillBackground=opts.fillBackground)
+                 dataseries[1:],
+                 header,
+                 filename=opts.outfile,
+                 xlabel=opts.xtitle,
+                 ylabel=opts.ytitle,
+                 legendColumns=opts.legendColumns,
+                 legendBBoxHeight=opts.legendBBoxHeight,
+                 yrange=opts.yrange,
+                 errorrows=opts.errorrows,
+                 errorcols=opts.errorcols,
+                 rotate=opts.rotate,
+                 datalabels=opts.datalabels,
+                 figheight=opts.figheight,
+                 figwidth=opts.figwidth,
+                 mode=usemode,
+                 separators=opts.separators,
+                 linemarkers=opts.linemarkers,
+                 labels=opts.labels,
+                 fillBackground=opts.fillBackground)
+    
     elif opts.plotType == "violin":
         violinPlot(header,
                    dataseries[1:],
@@ -240,24 +184,24 @@ def main():
     elif opts.plotType == "scatter":
         xdata, ydata = getScatterData(dataseries)
         scatterPlot(xdata,
-                       ydata,
-                       legend=header,
-                       filename=opts.outfile,
-                       xlabel=opts.xtitle,
-                       ylabel=opts.ytitle,
-                       legendColumns=opts.legendColumns,
-                       yrange=opts.yrange,
-                       figheight=opts.figheight,
-                       figwidth=opts.figwidth,
-                       mode=usemode) 
+                    ydata,
+                    legend=header,
+                    filename=opts.outfile,
+                    xlabel=opts.xtitle,
+                    ylabel=opts.ytitle,
+                    legendColumns=opts.legendColumns,
+                    yrange=opts.yrange,
+                    figheight=opts.figheight,
+                    figwidth=opts.figwidth,
+                    mode=usemode) 
     else:
         assert opts.plotType == "boxes"
-        boxPlot(dataseries,
-                       titles=header,
-                       plotmargins=margs,
-                       filename=opts.outfile,
-                       xlabel=opts.xtitle,
-                       ylabel=opts.ytitle)
+        boxPlot(dataseries[1:],
+                titles=header,
+                plotmargins=margs,
+                filename=opts.outfile,
+                xlabel=opts.xtitle,
+                ylabel=opts.ytitle)
 
     print "Done!"
 
