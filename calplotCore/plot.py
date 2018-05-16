@@ -154,7 +154,7 @@ def addLegend(ax, plottedItems, legendNames, kwargs):
                 bboxHeight = 0.3
         
     ax.legend(plottedItems, legendNames, bbox_to_anchor=(0.0, 1.04, 1.0, bboxHeight), loc="center", mode=lmode, borderaxespad=0.0,
-              frameon=False, ncol=useCols, handletextpad=0.3, labelspacing=0.15, columnspacing=0.5, numpoints=1)
+              frameon=False, ncol=useCols, handletextpad=0.3, labelspacing=0.15, columnspacing=0.5, numpoints=1, scatterpoints=1)
 
 ###############################################################################
 ## Plot methods
@@ -171,9 +171,10 @@ def scatterPlot(xdata, ydata, **kwargs):
     for i in range(len(xdata)):
         thisColor = cm.Blues(1*(float(i)/len(xdata)))
         thisMarker = MarkerStyle.filled_markers[i % len(MarkerStyle.filled_markers)]
+        
         scatters.append(ax.scatter(xdata[i], ydata[i], marker=thisMarker, color=thisColor, edgecolors="black"))
     
-    addLegend(ax, scatters, kwargs["legend"], kwargs)
+    addLegend(ax, scatters, removeUnderscores(kwargs["legend"]), kwargs)
     addLabelsAndSeparators(ax, kwargs)
     processOutput(kwargs)
 
@@ -242,7 +243,7 @@ def boxPlot(data, **kwargs):
         if len(kwargs["titles"]) != len(data):
             raise Exception("The titles list must have the same length as the data list")
         
-        setXticklabels(ax, kwargs["titles"], kwargs)
+        setXticklabels(ax, removeUnderscores(kwargs["titles"]), kwargs)
         
     ax.set_xlim(0.5, len(data)+0.5)
     

@@ -146,18 +146,6 @@ def createDataSeries(rawdata, datacols, plotType, fixWls, onlyWlNum):
 
     return dataseries
 
-def getScatterData(dataseries):
-    xdata = [[] for i in range(len(dataseries)-1)]
-    ydata = [[] for i in range(len(dataseries)-1)]
-    
-    for i in range(len(dataseries[1:])):
-        for j in range(len(dataseries[0])):
-            if dataseries[i+1][j] != NO_DATA_STRING:
-                xdata[i].append(dataseries[0][j])
-                ydata[i].append(dataseries[i+1][j])
-                
-    return xdata, ydata
-
 def colorCodeOffsets(text, doColor):
     if not doColor:
         return text

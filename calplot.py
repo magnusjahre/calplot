@@ -159,10 +159,9 @@ def main():
                    **kwargDict)
     
     elif opts.plotType == "scatter":
-        xdata, ydata = getScatterData(dataseries)
-        scatterPlot(xdata,
-                    ydata,
-                    legend=header,
+        scatterPlot(dataseries[1],
+                    dataseries[2],
+                    legend=dataseries[0],
                     **kwargDict) 
     else:
         assert opts.plotType == "boxes"
