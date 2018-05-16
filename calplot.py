@@ -7,8 +7,8 @@ Created on May 15, 2018
 '''
 
 from optparse import OptionParser
-from calplotCore import fatal, NO_DATA_STRING
-from calplotCore.io import readDataFile, createDataSeries, getScatterData
+from calplotCore import fatal
+from calplotCore.io import readDataFile, createDataSeries
 from calplotCore.plot import boxPlot, plotLines, barChart, violinPlot, scatterPlot
 
 def parseArgs():
