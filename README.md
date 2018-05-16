@@ -27,9 +27,9 @@ if "CALPLOTPATH" not in os.environ:
 
 scriptroot = os.environ["CALPLOTPATH"]
 if scriptroot not in sys.path:
-	sys.path.append(scriptroot)
+    sys.path.append(scriptroot)
 if "PYTHONPATH" not in os.environ:
-	os.environ["PYTHONPATH"] = scriptroot
+    os.environ["PYTHONPATH"] = scriptroot
 
 from calmerge import generateMergeCommand
 from calplot import generatePlotCommand
@@ -40,24 +40,24 @@ merges = []
 plots = []
 
 merges.append({"files": ["plots/cores-vs-s-energy-data.txt"],
-			         "outfile": "plots/cores-vs-s-energy-data-norm.txt",
-			         "colnames": "",
-			         "rownames": "",
-		           "opts": ["--normalize-to", "10", "--no-color"]})
+               "outfile": "plots/cores-vs-s-energy-data-norm.txt",
+               "colnames": "",
+               "rownames": "",
+               "opts": ["--normalize-to", "10", "--no-color"]})
  
 plots.append({"input": "plots/cores-vs-s-energy-data-norm.txt",
-			        "output": "plots/cores-vs-s-energy-data-norm.pdf",
-		          "type": "bars",
-			        "ytitle": "Relative Energy",
-			        "xtitle": 'Number of Cores',
-		     	    "opts": ["--legend-columns", "5", "--yrange", "0,1.25"] + getDimensions(2)})
+              "output": "plots/cores-vs-s-energy-data-norm.pdf",
+              "type": "bars",
+              "ytitle": "Relative Energy",
+              "xtitle": 'Number of Cores',
+              "opts": ["--legend-columns", "5", "--yrange", "0,1.25"] + getDimensions(2)})
 
 for m in merges:
-	env.Command(m["outfile"], m["files"], "python "+scriptroot+"/"+generateMergeCommand(m))
+    env.Command(m["outfile"], m["files"], "python "+scriptroot+"/"+generateMergeCommand(m))
 
 plotDeps = []
 for p in plots:
-	plotDeps.append(env.Command(p["output"], p["input"], "python "+scriptroot+"/"+generatePlotCommand(p)))
+    plotDeps.append(env.Command(p["output"], p["input"], "python "+scriptroot+"/"+generatePlotCommand(p)))
 
 paper = env.PDF(mainfile)
 
