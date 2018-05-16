@@ -1,5 +1,5 @@
 import math
-from calplotModules import numberToString
+from calplotCore import numberToString
 
 ###############################################################################
 ## Convenience methods

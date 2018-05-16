@@ -7,10 +7,9 @@ Created on May 15, 2018
 '''
 
 from optparse import OptionParser
-from calplotModules import fatal, NO_DATA_STRING
-from calplotModules.io import readDataFile
-
-from calplotModules.plot import boxPlot, plotLines, barChart, violinPlot, scatterPlot
+from calplotCore import fatal, NO_DATA_STRING
+from calplotCore.io import readDataFile
+from calplotCore.plot import boxPlot, plotLines, barChart, violinPlot, scatterPlot
 
 def parseArgs():
     parser = OptionParser(usage="calplot.py [options] filename [filename ...]")

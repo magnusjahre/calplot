@@ -4,7 +4,7 @@ Created on May 15, 2018
 @author: jahre
 '''
 
-from calplotModules import fatal, NO_DATA_STRING
+from calplotCore import fatal, NO_DATA_STRING
 
 def readDataFile(datafile, columns, onlyWlType):
     header = datafile.readline().strip().split()
