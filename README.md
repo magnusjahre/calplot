@@ -3,6 +3,8 @@
 This repository contains a frontend to matplotlib for plotting figures for papers that is used at NTNU's Computer Architecture Lab. It has two primary use cases:
  * Using the commandline interface to quickly plot experimental data while working
  * Integration with SCons for plotting highly optimized figures for papers
+ 
+For the scripts to work, you must first install matplotib (https://matplotlib.org).
 
 The basic operation is as follows:
  * The user provides one or more datafiles. An example datafile can be found in the calplotTest directory.
