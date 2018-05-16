@@ -4,7 +4,12 @@ Created on May 15, 2018
 @author: jahre
 '''
 
-from calplotCore import fatal, NO_DATA_STRING
+import re
+from calplotCore import fatal, NO_DATA_STRING, warn, normalize, isFloat
+
+redPrefix   = '\033[1;31m'
+greenPrefix = '\033[1;32m'
+colorSuffix = '\033[1;m'
 
 def readDataFile(datafile, columns, onlyWlType):
     header = datafile.readline().strip().split()
@@ -62,6 +67,50 @@ def readDataFile(datafile, columns, onlyWlType):
     
     return header, data
 
+def readFilesForMerge(filenames, opts):
+    
+    data = []
+    
+    for fileID in range(len(filenames)):
+        filename = filenames[fileID]
+        curFile = open(filename)
+        
+        first = True
+        fileRows = []
+        numVals = 0
+        
+        for line in curFile:
+            if first:
+                head = re.split(opts.headSeparator, line.strip())
+                firstLength = len(head) 
+                first = False
+            else:
+                values = re.split(opts.dataSeparator, line.strip())
+                if numVals != 0:
+                    if len(values) != numVals:
+                        if not opts.quiet:
+                            warn("Cannot parse line: "+str(line.strip()))
+                        continue
+                numVals = len(values)
+                
+                fileRows.append(values)
+                
+        if not (firstLength == numVals or firstLength == numVals-1):
+            fatal("Unknown header format in file "+filename+", possibly a parse error") 
+        
+        if opts.columnPrefix != "":
+            try:
+                prefix = opts.columnPrefix.split(",")[fileID]
+            except:
+                fatal("Column prefix parse error in string"+opts.columnPrefix)
+            
+            for i in range(len(head)):
+                head[i] = prefix+head[i]
+        
+        data.append( (head, fileRows, numVals, filename) )
+    
+    return data
+
 def createDataSeries(rawdata, datacols, plotType, fixWls, onlyWlNum):
     dataseries =[[] for i in range(datacols+1)]
     
@@ -108,3 +157,81 @@ def getScatterData(dataseries):
                 ydata[i].append(dataseries[i+1][j])
                 
     return xdata, ydata
+
+def colorCodeOffsets(text, doColor):
+    if not doColor:
+        return text
+    
+    if not isFloat(text):
+        return text
+    
+    floatVal = float(text)
+    
+    if floatVal == 1.0:
+        return text
+    
+    if floatVal > 1.0:
+        return greenPrefix+text+colorSuffix
+    
+    return redPrefix+text+colorSuffix
+
+def justify(text, left, width):
+    
+    if colorSuffix not in text:
+        padding = width - len(text)
+    else:
+        tmpText = text.replace(colorSuffix, "")
+        tmpText = tmpText.replace(redPrefix, "")
+        tmpText = tmpText.replace(greenPrefix, "")
+        padding = width - len(tmpText)
+    
+    padStr = ""
+    for i in range(padding):
+        padStr += " "
+    
+    if left:
+        return text+padStr
+    return padStr+text
+
+def printData(textarray, leftJust, outfile, decimals, **kwargs):
+
+    if "normalizeToColumn" in kwargs:        
+        normalizeToColumn = kwargs["normalizeToColumn"]
+    else:
+        normalizeToColumn = -1
+    
+    if "colorCodeOffsets" in kwargs:
+        doColor = kwargs["colorCodeOffsets"]
+    else:
+        doColor = False
+    
+    if textarray == []:
+        raise ValueError("array cannot be empty")
+    if textarray[0] == []:
+        raise ValueError("array cannot be empty")
+    if len(textarray[0]) != len(leftJust):
+        raise ValueError("justification array must be the same with as the rows")
+    
+    if normalizeToColumn != -1:
+        textarray = normalize(textarray, normalizeToColumn, decimals)
+    
+    padding = 2
+    
+    colwidths = [0 for i in range(len(textarray[0]))]
+    
+    for i in range(len(textarray)):
+        for j in range(len(textarray[i])):
+            if not (isinstance(textarray[i][j], str) or isinstance(textarray[i][j], unicode)):
+                raise TypeError("all printed elements must be strings")
+            
+            if len(textarray[i][j]) + padding > colwidths[j]:
+                colwidths[j] = len(textarray[i][j]) + padding
+    
+    
+    for i in range(len(textarray)):
+        for j in range(len(textarray[i])):
+            print >> outfile, justify(colorCodeOffsets(textarray[i][j], doColor),
+                                      leftJust[j],
+                                      colwidths[j]),
+        print >> outfile, ""
+    
