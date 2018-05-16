@@ -12,7 +12,7 @@ from calplotCore.io import readDataFile, createDataSeries, getScatterData
 from calplotCore.plot import boxPlot, plotLines, barChart, violinPlot, scatterPlot
 
 def parseArgs():
-    parser = OptionParser(usage="calplot.py [options] filename [filename ...]")
+    parser = OptionParser(usage="calplot.py [options] filename")
 
     plotTypes = ["boxes", "lines", "bars", "violin", "scatter"]
 
@@ -20,7 +20,6 @@ def parseArgs():
     parser.add_option("--decimals", action="store", dest="decimals", type="int", default=2, help="Number of decimals to use when printing results")
     parser.add_option("--legend-columns", action="store", dest="legendColumns", type="int", default=2, help="Number of columns in legend")
     parser.add_option("--legend-bbox-height", action="store", dest="legendBBoxHeight", type="float", default=0.0, help="Manually set the height of the bbox legend to this value.")
-    parser.add_option("--margins", action="store", dest="margins", type="string", default="", help="Comma separated plot margins: left,right,top,bottom ")
     parser.add_option("--outfile", action="store", dest="outfile", type="string", default=None, help="Output filename (Default: plot.pdf)")
     parser.add_option("--plot-type", action="store", dest="plotType", type="string", default="bars", help="Output filename (Default: bars, alternatives "+str(plotTypes)+")")
     parser.add_option("-y", "--ytitle", action="store", dest="ytitle", type="string", default="Y axis title", help="Y axis title")
@@ -72,7 +71,7 @@ def parseArgs():
     return opts, args, datafiles
 
 def generatePlotCommand(data):
-    cmd = ["plotDataFile.py"]
+    cmd = ["calplot.py"]
     cmd.append("--plot-type")
     cmd.append(data["type"])
     cmd.append("-y")
@@ -110,15 +109,6 @@ def main():
                 avg = float(sum(dataseries[i])) / float(len(dataseries[i]))
                 dataseries[i].append(avg)
     
-    if opts.margins != "":
-        margList = opts.margins.split(",")
-        try:
-            margs = (float(margList[0]),float(margList[1]),float(margList[2]),float(margList[3]))
-        except:
-            fatal("Margin plot error")
-    else:
-        margs = None
-    
     if opts.outfile != None:
         print "Plotting data to file "+opts.outfile+"..."
     else:
@@ -128,80 +118,57 @@ def main():
     if usemode == "None":
         usemode = None
     
+    kwargDict = {"filename": opts.outfile,
+                 "xlabel": opts.xtitle,
+                 "ylabel": opts.ytitle,
+                 "legendColumns": opts.legendColumns,
+                 "legendBBoxHeight": opts.legendBBoxHeight,
+                 "yrange": opts.yrange,
+                 "rotate": opts.rotate,
+                 "datalabels": opts.datalabels,
+                 "figheight": opts.figheight,
+                 "figwidth": opts.figwidth,
+                 "mode": usemode,
+                 "separators": opts.separators,
+                 "linemarkers": opts.linemarkers,
+                 "labels": opts.labels,
+                 "fillBackground": opts.fillBackground,
+                 "largeFonts": opts.largeFonts}
+    
     if opts.plotType == "lines":
+        
+        kwargDict["divFactor"] = opts.divFactor
+        kwargDict["markEvery"] = opts.markEvery
+        
         plotLines(dataseries[0], dataseries[1:],
                   titles=header,
-                  filename=opts.outfile,
-                  xlabel=opts.xtitle,
-                  ylabel=opts.ytitle,
-                  legendColumns=opts.legendColumns,
-                  yrange=opts.yrange,
-                  xrange=opts.xrange,
-                  figheight=opts.figheight,
-                  figwidth=opts.figwidth,
-                  markEvery=opts.markEvery,
-                  largeFonts=opts.largeFonts,
-                  divFactor=opts.divFactor,
-                  labels=opts.labels,
-                  separators=opts.separators,
-                  fillBackground=opts.fillBackground,
-                  rotate=opts.rotate)
+                  **kwargDict)
         
     elif opts.plotType == "bars":
+        kwargDict["errorrows"] = opts.errorrows
+        kwargDict["errorcols"] = opts.errorcols
+        
         barChart(dataseries[0],
                  dataseries[1:],
                  header,
-                 filename=opts.outfile,
-                 xlabel=opts.xtitle,
-                 ylabel=opts.ytitle,
-                 legendColumns=opts.legendColumns,
-                 legendBBoxHeight=opts.legendBBoxHeight,
-                 yrange=opts.yrange,
-                 errorrows=opts.errorrows,
-                 errorcols=opts.errorcols,
-                 rotate=opts.rotate,
-                 datalabels=opts.datalabels,
-                 figheight=opts.figheight,
-                 figwidth=opts.figwidth,
-                 mode=usemode,
-                 separators=opts.separators,
-                 linemarkers=opts.linemarkers,
-                 labels=opts.labels,
-                 fillBackground=opts.fillBackground)
+                 **kwargDict)
     
     elif opts.plotType == "violin":
         violinPlot(header,
                    dataseries[1:],
-                   filename=opts.outfile,
-                   xlabel=opts.xtitle,
-                   ylabel=opts.ytitle,
-                   yrange=opts.yrange,
-                   rotate=opts.rotate,
-                   figheight=opts.figheight,
-                   figwidth=opts.figwidth,
-                   labels=opts.labels)
+                   **kwargDict)
     
     elif opts.plotType == "scatter":
         xdata, ydata = getScatterData(dataseries)
         scatterPlot(xdata,
                     ydata,
                     legend=header,
-                    filename=opts.outfile,
-                    xlabel=opts.xtitle,
-                    ylabel=opts.ytitle,
-                    legendColumns=opts.legendColumns,
-                    yrange=opts.yrange,
-                    figheight=opts.figheight,
-                    figwidth=opts.figwidth,
-                    mode=usemode) 
+                    **kwargDict) 
     else:
         assert opts.plotType == "boxes"
         boxPlot(dataseries[1:],
                 titles=header,
-                plotmargins=margs,
-                filename=opts.outfile,
-                xlabel=opts.xtitle,
-                ylabel=opts.ytitle)
+                **kwargDict)
 
     print "Done!"
 
