@@ -4,7 +4,15 @@ This repository contains a frontend to matplotlib for plotting figures for paper
  * Using the commandline interface to quickly plot experimental data while working
  * Integration with SCons for plotting highly optimized figures for papers
  
-For the scripts to work, you must first install matplotib (https://matplotlib.org).
+## Setting up Calplot
+
+For the scripts to work, you must first install matplotib (https://matplotlib.org). In addition, you need to add the calplot root directory to the *PYTHONPATH* environment variable. Adding the following to ~/.bash_profile will do the trick:
+```
+export CALPLOTPATH=[INSERT_CALPLOT_PATH_HERE]/calplot
+export PYTHONPATH=$PYTHONPATH:$CALPLOTPATH
+```
+
+## Using Calplot
 
 The basic operation is as follows:
  * The user provides one or more datafiles. An example datafile can be found in the calplotTest directory.
@@ -15,7 +23,9 @@ Both calmerge.py and calplot.py have a large number of option which will be prin
 
 # SCons integration
 
-For SCons integration to work, SCons needs to know where to find calplot. To make this work, you need to set the *CALPLOTPATH* environment variable to contain the absolute path to the calplot repository. The code below sets up the methods needed.
+For SCons integration to work, SCons needs to know where to find calplot. To make this work, you need to set the *CALPLOTPATH* environment variable to contain the absolute path to the calplot repository. If you followed the setup instructions above to the letter, you will already have set *CALPLOTPATH* correctly.
+
+The code below sets up the methods needed.
 
 ```python
 
@@ -37,6 +47,7 @@ from calmerge import generateMergeCommand
 from calplot import generatePlotCommand
 ```
 Calplot contains convenience methods that call calplot.py and calmerge.py with correct parameters when provided with a dictionary following a specific format. The format matches the options provided by calmerge and calplot.
+
 ```python
 merges = []
 plots = []
