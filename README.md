@@ -6,7 +6,11 @@ This repository contains a frontend to matplotlib for plotting figures for paper
  
 ## Setting up Calplot
 
-For the scripts to work, you must first install matplotib (https://matplotlib.org). In addition, you need to add the calplot root directory to the *PYTHONPATH* environment variable. Adding the following to ~/.bash_profile will do the trick:
+For the scripts to work, you must first install:
+ * Matplotib (https://matplotlib.org)
+ * Latex
+
+In addition, you need to add the calplot root directory to the *PYTHONPATH* environment variable. Adding the following to ~/.bash_profile will do the trick:
 ```
 export CALPLOTPATH=[INSERT_CALPLOT_PATH_HERE]/calplot
 export PYTHONPATH=$PYTHONPATH:$CALPLOTPATH
