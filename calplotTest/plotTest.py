@@ -4,7 +4,7 @@ Created on May 16, 2018
 @author: jahre
 '''
 import unittest
-from calplotCore.io import readDataFile, createDataSeries, getScatterData
+from calplotCore.io import readDataFile, createDataSeries
 from calplotCore.plot import scatterPlot, plotLines, boxPlot, violinPlot, barChart
 
 class Test(unittest.TestCase):
@@ -22,8 +22,7 @@ class Test(unittest.TestCase):
         pass
 
     def testScatterPlot(self):
-        xdata, ydata = getScatterData(self.dataseries)
-        scatterPlot(xdata, ydata, legend=self.header, filename=self.outfile)
+        scatterPlot(self.dataseries[1], self.dataseries[2], legend=self.dataseries[0], filename=self.outfile)
 
     def testLinePlot(self):
         plotLines(self.dataseries[0], self.dataseries[1:], titles=self.header, filename=self.outfile)
