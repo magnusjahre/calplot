@@ -42,6 +42,8 @@ class Test(unittest.TestCase):
     def testBarChart(self):
         barChart(self.dataseries[0], self.dataseries[1:], self.header, filename=self.outfile)
 
+    def testBarChartWithMissingData(self):
+        barChart(self.missingDataSeries[0], self.missingDataSeries[1:], self.missingDataHeader, filename=self.outfile)
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

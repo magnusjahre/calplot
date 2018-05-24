@@ -277,6 +277,15 @@ def violinPlot(names, values, **kwargs):
     addLabelsAndSeparators(ax, kwargs)
     processOutput(kwargs)
 
+def cleanNoneValues(values):
+    newvals = []
+    for v in values:
+        if v == None:
+            newvals.append(0)
+        else:
+            newvals.append(v)
+    return newvals
+
 def barChart(names, values, legendNames, **kwargs):
     
     ax = setUpFonts(kwargs)
@@ -326,12 +335,12 @@ def barChart(names, values, legendNames, **kwargs):
         barwidth = width/float(numSeries)
         thisColor = cm.Blues(1*(float(i)/numSeries))
         if errorcols:
-            bars.append(ax.bar(ind+(barwidth*i), values[2*i], barwidth, yerr=values[(2*i)+1], ecolor="black", color=thisColor))
+            bars.append(ax.bar(ind+(barwidth*i), cleanNoneValues(values[2*i]), barwidth, yerr=values[(2*i)+1], ecolor="black", color=thisColor))
             localLegend.append(legendNames[2*i])
         elif errorrows:
-            bars.append(ax.bar(ind+(barwidth*i), values[i], barwidth, yerr=errordata[i], ecolor="black", color=thisColor))
+            bars.append(ax.bar(ind+(barwidth*i), cleanNoneValues(values[i]), barwidth, yerr=errordata[i], ecolor="black", color=thisColor))
         else:
-            bars.append(ax.bar(ind+(barwidth*i), values[i], barwidth, color=thisColor))
+            bars.append(ax.bar(ind+(barwidth*i), cleanNoneValues(values[i]), barwidth, color=thisColor))
         
     ax.set_xlim(0, len(names))
     ax.set_xticks(ind+(width/2.0))
