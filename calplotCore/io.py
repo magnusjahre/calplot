@@ -27,7 +27,7 @@ def readDataFile(datafile, columns, onlyWlType):
                 error = True
                 continue
             elif e == NO_DATA_STRING:
-                tmp.append(NO_DATA_STRING)
+                tmp.append(None)
                 continue
             
             try:

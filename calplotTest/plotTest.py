@@ -10,12 +10,15 @@ from calplotCore.plot import scatterPlot, plotLines, boxPlot, violinPlot, barCha
 class Test(unittest.TestCase):
 
 
-    def setUp(self):
-        f = open("calplotTest/data.txt")
-        self.header, data = readDataFile(f, "", "")
+    def getDataSeries(self, filename):
+        f = open(filename)
+        header, data = readDataFile(f, "", "")
         f.close()
-        
-        self.dataseries = createDataSeries(data, len(self.header), "", False, False)
+        return header, createDataSeries(data, len(header), "", False, False)
+
+    def setUp(self):
+        self.header, self.dataseries = self.getDataSeries("calplotTest/data.txt")
+        self.missingDataHeader, self.missingDataSeries = self.getDataSeries("calplotTest/missing-data.txt")
         self.outfile = "data.pdf"
 
     def tearDown(self):
@@ -26,6 +29,9 @@ class Test(unittest.TestCase):
 
     def testLinePlot(self):
         plotLines(self.dataseries[0], self.dataseries[1:], titles=self.header, filename=self.outfile)
+
+    def testLinePlotWithMissingData(self):
+        plotLines(self.missingDataSeries[0], self.missingDataSeries[1:], titles=self.missingDataHeader, filename=self.outfile)
     
     def testBoxPlot(self):
         boxPlot(self.dataseries[1:], titles=self.header, filename=self.outfile)
@@ -35,8 +41,6 @@ class Test(unittest.TestCase):
 
     def testBarChart(self):
         barChart(self.dataseries[0], self.dataseries[1:], self.header, filename=self.outfile)
-        
-        
 
 
 if __name__ == "__main__":

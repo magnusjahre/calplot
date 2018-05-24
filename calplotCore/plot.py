@@ -191,7 +191,8 @@ def plotLines(xvalues, ydataseries, **kwargs):
     if "divFactor" in kwargs:
         for i in range(len(ydataseries)):
             for j in range(len(ydataseries[i])):
-                ydataseries[i][j] = ydataseries[i][j] / kwargs["divFactor"]
+                if ydataseries[i][j] != None:
+                    ydataseries[i][j] = ydataseries[i][j] / kwargs["divFactor"]
     
     lines = []
     for i in range(len(ydataseries)):
