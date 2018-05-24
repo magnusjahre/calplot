@@ -389,15 +389,19 @@ def sortAfterColumn(processedData, justify, opts):
     
     return newdata,justify
 
+def valueIsValid(value):
+    if value == ERROR_STRING:
+        return False
+    if value == NO_DATA_STRING:
+        return False
+    return True
+
 def normaliseData(processedData, justify, opts):
     
     for i in range(len(processedData))[1:]:
-        normTo = float(processedData[i][opts.normalizeTo])
-        
         for j in range(len(processedData[i]))[1:]:
-            if processedData[i][j] == ERROR_STRING or processedData[i][opts.normalizeTo] == ERROR_STRING:
-                continue
-            else:
+            if valueIsValid(processedData[i][j]) and valueIsValid(processedData[i][opts.normalizeTo]):
+                normTo = float(processedData[i][opts.normalizeTo])
                 if ("%.6f" % normTo) == "0.000000" and ("%.6f" % float(processedData[i][j])) == "0.000000":
                     processedData[i][j] = numberToString(1.0, opts.decimals)
                 elif normTo == 0.0:
