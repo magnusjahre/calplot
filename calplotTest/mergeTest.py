@@ -22,12 +22,12 @@ class Test(unittest.TestCase):
                 self.assertEqual(processedData[i][j], correctData[i][j], "Elements "+processedData[i][j]+" and "+correctData[i][j]+" are not equal")
 
     def testNormalization(self):
-        fileData = readFilesForMerge(["calplotTest/merge-test-input.txt"], "\s+", "", False)
+        fileData = readFilesForMerge(["calplotTest/testfiles/merge-test-input.txt"], "\s+", "", False)
         mergedData, columnToFileList = mergeData(fileData, False, True)
         processedData, justify = processData(mergedData, [], "")
         processedData, justify = normaliseData(processedData, justify, 1, 2)
 
-        correctData = readFilesForMerge(["calplotTest/merge-test-output.txt"], "\s+", "", False)
+        correctData = readFilesForMerge(["calplotTest/testfiles/merge-test-output.txt"], "\s+", "", False)
         mergedCorrectData, columnToFileList = mergeData(correctData, False, True)
         processedCorrectData, justify = processData(mergedCorrectData, [], "")
         

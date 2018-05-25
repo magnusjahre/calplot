@@ -21,8 +21,8 @@ class Test(unittest.TestCase):
         return self.outdir+"/"+name
 
     def setUp(self):
-        self.header, self.dataseries = self.getDataSeries("calplotTest/data.txt")
-        self.missingDataHeader, self.missingDataSeries = self.getDataSeries("calplotTest/missing-data.txt")
+        self.header, self.dataseries = self.getDataSeries("calplotTest/testfiles/data.txt")
+        self.missingDataHeader, self.missingDataSeries = self.getDataSeries("calplotTest/testfiles/missing-data.txt")
         
         self.outdir = "testplots"
         if not os.path.exists(self.outdir):
