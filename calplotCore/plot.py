@@ -198,7 +198,7 @@ def plotLines(xvalues, ydataseries, **kwargs):
     for i in range(len(ydataseries)):
         thisColor = cm.Paired(1*(float(i)/float(len(ydataseries))))
         thisMarker = MarkerStyle.filled_markers[i]
-        lines += ax.plot(xvalues, ydataseries[i], color=thisColor, marker=thisMarker, markevery=markEvery)
+        lines += ax.plot([float(x) for x in xvalues], ydataseries[i], color=thisColor, marker=thisMarker, markevery=markEvery)
     
     labels = None
     if "titles" in kwargs:
@@ -211,7 +211,11 @@ def plotLines(xvalues, ydataseries, **kwargs):
         
         addLegend(ax, lines, labels, kwargs)
 
-    setXticklabels(ax, xvalues, kwargs)
+    rotation = "horizontal"
+    if "rotate" in kwargs:
+        rotation = kwargs["rotate"]
+    plt.xticks(rotation=rotation)
+
     addLabelsAndSeparators(ax, kwargs)
     processOutput(kwargs)
 
