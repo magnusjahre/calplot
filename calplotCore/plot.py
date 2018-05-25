@@ -271,7 +271,7 @@ def violinPlot(names, values, **kwargs):
 
     ax.set_xlim((-violinWidth/2)-edgePadding, len(names)-(violinWidth/2)-edgePadding)
     ax.set_xticks(pos)
-    ax.tick_params(axis="x", direction="out", top="off")
+    ax.tick_params(axis="x", direction="out", top=False)
     
     setXticklabels(ax, names, kwargs)
     addLabelsAndSeparators(ax, kwargs)
