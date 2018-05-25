@@ -15,7 +15,7 @@ def parseArgs():
     parser.add_option("--decimals", action="store", dest="decimals", type="int", default=2, help="Number of decimals to use when printing results")
     parser.add_option("--separator", action="store", dest="separator", type="string", default="\s+", help="Separator between columns")
     parser.add_option("--print-spec", action="store", dest="printSpec", type="string", default="", help="A comma separated list of one-indexed column IDs include in output (e.g. 2,3,1)")
-    parser.add_option("--normalize-to", action="store", dest="normalizeTo", type="int", default=-1, help="Print values relative to this column")
+    parser.add_option("--normalize-to", action="store", dest="normalizeTo", type="string", default="", help="Column or point to normalize to. Single value means column, c,r means column c and row r.")
     parser.add_option("--print-names", action="store_true", dest="printColumnNames", default=False, help="Print the column ID to column name mapping for the provided files")
     parser.add_option("--col-prefix", action="store", dest="columnPrefix", default="", help="Prefix the columns from each file with the following prefix (Comma separated)")
     parser.add_option("--col-names", action="store", dest="columnNames", default="", help="Rename the columns to the names in this list (Comma separated)")
@@ -397,13 +397,29 @@ def valueIsValid(value):
 
 def normaliseData(processedData, justify, normalizeTo, decimals):
     
+    val = normalizeTo.split(",")
+    try:
+        normToCol = int(val[0])
+        normToRow = -1
+        if len(val) > 1:
+            normToRow = int(val[1])
+    except:
+        fatal("Cannot parse normalize to specification "+normalizeTo)
+    
+    if normToRow != -1:
+        if not valueIsValid(processedData[normToRow][normToCol]):
+            fatal("Value "+str(processedData[normToRow][normToCol])+" is invalid. Cannot normalize to column "+str(normToCol)+" and row "+str(normToRow))
+    
+        normTo = float(processedData[normToRow][normToCol])
+    
+    
     for i in range(len(processedData))[1:]:
         
-        if valueIsValid(processedData[i][normalizeTo]):
-            normTo = float(processedData[i][normalizeTo])
-        else:
-            fatal("Value "+str(processedData[i][normalizeTo])+" is invalid. Cannot normalize to this column ("+str(normalizeTo)+")")
-        
+        if normToRow == -1:
+            if not valueIsValid(processedData[i][normToCol]):
+                fatal("Value "+str(processedData[i][normToCol])+" is invalid. Cannot normalize to column "+str(normToCol))
+            normTo = float(processedData[i][normToCol])
+            
         for j in range(len(processedData[i]))[1:]:
             if valueIsValid(processedData[i][j]):
                 if ("%.6f" % normTo) == "0.000000" and ("%.6f" % float(processedData[i][j])) == "0.000000":
@@ -500,7 +516,7 @@ def main():
         processedData, justify = sortColumns(processedData, justify, opts)
     if opts.minHistogram:
         processedData, justify = minHistogram(processedData, justify)
-    if opts.normalizeTo != -1:
+    if opts.normalizeTo != "":
         processedData, justify = normaliseData(processedData, justify, opts.normalizeTo, opts.decimals)
     if opts.sortAfterCol != -1:
         processedData, justify = sortAfterColumn(processedData, justify, opts)
