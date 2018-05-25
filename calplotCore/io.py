@@ -67,7 +67,7 @@ def readDataFile(datafile, columns, onlyWlType):
     
     return header, data
 
-def readFilesForMerge(filenames, opts):
+def readFilesForMerge(filenames, separator, columnPrefix, quiet):
     
     data = []
     
@@ -81,14 +81,14 @@ def readFilesForMerge(filenames, opts):
         
         for line in curFile:
             if first:
-                head = re.split(opts.headSeparator, line.strip())
+                head = re.split(separator, line.strip())
                 firstLength = len(head) 
                 first = False
             else:
-                values = re.split(opts.dataSeparator, line.strip())
+                values = re.split(separator, line.strip())
                 if numVals != 0:
                     if len(values) != numVals:
-                        if not opts.quiet:
+                        if not quiet:
                             warn("Cannot parse line: "+str(line.strip()))
                         continue
                 numVals = len(values)
@@ -98,11 +98,11 @@ def readFilesForMerge(filenames, opts):
         if not (firstLength == numVals or firstLength == numVals-1):
             fatal("Unknown header format in file "+filename+", possibly a parse error") 
         
-        if opts.columnPrefix != "":
+        if columnPrefix != "":
             try:
-                prefix = opts.columnPrefix.split(",")[fileID]
+                prefix = columnPrefix.split(",")[fileID]
             except:
-                fatal("Column prefix parse error in string"+opts.columnPrefix)
+                fatal("Column prefix parse error in string"+columnPrefix)
             
             for i in range(len(head)):
                 head[i] = prefix+head[i]

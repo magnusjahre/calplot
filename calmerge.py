@@ -13,8 +13,7 @@ def parseArgs():
 
     parser.add_option("--quiet", action="store_true", dest="quiet", default=False, help="Only write results to stdout")
     parser.add_option("--decimals", action="store", dest="decimals", type="int", default=2, help="Number of decimals to use when printing results")
-    parser.add_option("--data-separator", action="store", dest="dataSeparator", type="string", default="\s+", help="Separator for data lines text files")
-    parser.add_option("--head-separator", action="store", dest="headSeparator", type="string", default="\s\s+", help="Separator for header lines text files")
+    parser.add_option("--separator", action="store", dest="separator", type="string", default="\s+", help="Separator between columns")
     parser.add_option("--print-spec", action="store", dest="printSpec", type="string", default="", help="A comma separated list of one-indexed column IDs include in output (e.g. 2,3,1)")
     parser.add_option("--normalize-to", action="store", dest="normalizeTo", type="int", default=-1, help="Print values relative to this column")
     parser.add_option("--print-names", action="store_true", dest="printColumnNames", default=False, help="Print the column ID to column name mapping for the provided files")
@@ -56,7 +55,7 @@ def parsePrintSpec(opts):
             mergeSpec.append( colID )
     return mergeSpec
 
-def mergeData(fileData, opts): 
+def mergeData(fileData, pureMerge, disableRowSort): 
     
     totalHeaders = [""]
     mergedData = {}
@@ -79,7 +78,7 @@ def mergeData(fileData, opts):
         for v in values:
             assert len(v) == numVals
             
-            if opts.pureMerge:
+            if pureMerge:
                 wl = str(lineIdent)
                 lineIdent += 1
             else:
@@ -120,7 +119,7 @@ def mergeData(fileData, opts):
             for val in v[1:]:
                 mergedData[linekey].append(val)
         
-        if opts.pureMerge:
+        if pureMerge:
             curPrefix += [NO_DATA_STRING for i in range(len(headers))]
     
             for i in mergedData:
@@ -133,7 +132,7 @@ def mergeData(fileData, opts):
     
     wls = mergedData.keys()
     wls.sort()
-    if opts.disableRowSort:
+    if disableRowSort:
         wls = lineOrder
             
     mergedMatrix = []
@@ -173,14 +172,14 @@ def renameRows(mergedData, opts):
                 print "Renaming row "+mergedData[i][0]+" to "+newrownames[i]
             mergedData[i][0] = newrownames[i]
 
-def filterData(mergedData, opts):
-    if opts.filterPattern == "":
+def filterData(mergedData, filterPattern):
+    if filterPattern == "":
         return mergedData
     
     header = mergedData[0]
     newdata = {}
     for i in range(len(mergedData))[1:]:
-        if re.search(opts.filterPattern, mergedData[i][0]):
+        if re.search(filterPattern, mergedData[i][0]):
             thisKey = mergedData[i][0] 
             if isInt(thisKey):
                 thisKey = int(thisKey)
@@ -196,7 +195,7 @@ def filterData(mergedData, opts):
     
     return printData
 
-def processData(mergedData, mergeSpec, opts):
+def processData(mergedData, mergeSpec, filterPattern):
     
     if mergeSpec != []:
         newData = []
@@ -207,7 +206,7 @@ def processData(mergedData, mergeSpec, opts):
             newData.append(newLine)
         mergedData = newData
     
-    mergedData = filterData(mergedData, opts)
+    mergedData = filterData(mergedData, filterPattern)
     
     justify = [False for i in range(len(mergedData[0]))]
     justify[0] = True
@@ -396,23 +395,28 @@ def valueIsValid(value):
         return False
     return True
 
-def normaliseData(processedData, justify, opts):
+def normaliseData(processedData, justify, normalizeTo, decimals):
     
     for i in range(len(processedData))[1:]:
+        
+        if valueIsValid(processedData[i][normalizeTo]):
+            normTo = float(processedData[i][normalizeTo])
+        else:
+            fatal("Value "+str(processedData[i][normalizeTo])+" is invalid. Cannot normalize to this column ("+str(normalizeTo)+")")
+        
         for j in range(len(processedData[i]))[1:]:
-            if valueIsValid(processedData[i][j]) and valueIsValid(processedData[i][opts.normalizeTo]):
-                normTo = float(processedData[i][opts.normalizeTo])
+            if valueIsValid(processedData[i][j]):
                 if ("%.6f" % normTo) == "0.000000" and ("%.6f" % float(processedData[i][j])) == "0.000000":
-                    processedData[i][j] = numberToString(1.0, opts.decimals)
+                    processedData[i][j] = numberToString(1.0, decimals)
                 elif normTo == 0.0:
                     processedData[i][j] = "inf"                
                 else:    
                     try:
                         relVal = float(processedData[i][j]) / normTo
                     except:
-                        fatal("Normalization failed on line "+str(i)+", column "+str(j)+", trying to normalize to column "+str(opts.normalizeTo))
+                        fatal("Normalization failed on line "+str(i)+", column "+str(j)+", trying to normalize to column "+str(normalizeTo))
                     
-                    processedData[i][j] = numberToString(relVal, opts.decimals)
+                    processedData[i][j] = numberToString(relVal, decimals)
             
     return processedData, justify
 
@@ -469,8 +473,8 @@ def main():
         if not os.path.exists(filename):
             fatal("File "+filename+" does not exist!")
     
-    fileData = readFilesForMerge(args, opts)
-    mergedData, columnToFileList = mergeData(fileData, opts)
+    fileData = readFilesForMerge(args, opts.separator, opts.columnPrefix, opts.quiet)
+    mergedData, columnToFileList = mergeData(fileData, opts.pureMerge, opts.disableRowSort)
     
     if opts.printColumnNames:
         printNames(mergedData, columnToFileList)
@@ -481,7 +485,7 @@ def main():
     else:
         doColor = False
     
-    processedData, justify = processData(mergedData, printSpec, opts)
+    processedData, justify = processData(mergedData, printSpec, opts.filterPattern)
     if opts.splitWlTypes:
         processedData, justify = splitWlTypes(processedData)
     
@@ -497,7 +501,7 @@ def main():
     if opts.minHistogram:
         processedData, justify = minHistogram(processedData, justify)
     if opts.normalizeTo != -1:
-        processedData, justify = normaliseData(processedData, justify, opts)
+        processedData, justify = normaliseData(processedData, justify, opts.normalizeTo, opts.decimals)
     if opts.sortAfterCol != -1:
         processedData, justify = sortAfterColumn(processedData, justify, opts)
     
