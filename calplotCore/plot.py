@@ -340,7 +340,7 @@ def barChart(names, values, legendNames, **kwargs):
         elif errorrows:
             bars.append(ax.bar(ind+(barwidth*i), cleanNoneValues(values[i]), barwidth, yerr=errordata[i], edgecolor="black", color=thisColor))
         else:
-            bars.append(ax.bar(ind+(barwidth*i), cleanNoneValues(values[i]), barwidth, edgecolor="black", color=thisColor))
+            bars.append(ax.bar(ind+(barwidth*i), cleanNoneValues(values[i]), barwidth, edgecolor="black", color=thisColor, align="edge"))
         
     ax.set_xlim(0, len(names))
     ax.set_xticks(ind+(width/2.0))
