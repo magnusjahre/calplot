@@ -211,14 +211,7 @@ def plotLines(xvalues, ydataseries, **kwargs):
         
         addLegend(ax, lines, labels, kwargs)
 
-    rotation = "horizontal"
-    if "rotate" in kwargs:
-        rotation = kwargs["rotate"]
-
-    if rotation != "horizontal":
-        ax.set_xticklabels([int(i) for i in ax.get_xticks()], rotation=rotation)
-        ax.set_yticklabels([int(i) for i in ax.get_yticks()])
-
+    setXticklabels(ax, xvalues, kwargs)
     addLabelsAndSeparators(ax, kwargs)
     processOutput(kwargs)
 
