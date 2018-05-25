@@ -496,7 +496,7 @@ def main():
         printNames(mergedData, columnToFileList)
         return
     
-    if opts.normalizeTo != -1 and not opts.noColor:
+    if opts.normalizeTo != "" and not opts.noColor:
         doColor = True
     else:
         doColor = False
