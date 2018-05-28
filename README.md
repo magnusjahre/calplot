@@ -3,6 +3,8 @@
 This repository contains a frontend to matplotlib for plotting figures for papers that is used at NTNU's Computer Architecture Lab. It has two primary use cases:
  * Using the commandline interface to quickly plot experimental data while working
  * Integration with SCons for plotting highly optimized figures for papers
+
+Although Calplot in theory should be cross-platform, it is currently only tested on Linux and OSX.
  
 ## Setting up Calplot
 
