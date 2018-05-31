@@ -15,7 +15,7 @@ def parseArgs():
     parser.add_option("--decimals", action="store", dest="decimals", type="int", default=2, help="Number of decimals to use when printing results")
     parser.add_option("--separator", action="store", dest="separator", type="string", default="\s+", help="Separator between columns")
     parser.add_option("--print-spec", action="store", dest="printSpec", type="string", default="", help="A comma separated list of one-indexed column IDs include in output (e.g. 2,3,1)")
-    parser.add_option("--normalize-to", action="store", dest="normalizeTo", type="string", default="", help="Column or point to normalize to. Single value means column, c,r means column c and row r.")
+    parser.add_option("--normalize-to", action="store", dest="normalizeTo", type="string", default="", help="Column or point to normalize to or max to normalize to the maximum value. Single value means column, c,r means column c and row r.")
     parser.add_option("--print-names", action="store_true", dest="printColumnNames", default=False, help="Print the column ID to column name mapping for the provided files")
     parser.add_option("--col-prefix", action="store", dest="columnPrefix", default="", help="Prefix the columns from each file with the following prefix (Comma separated)")
     parser.add_option("--col-names", action="store", dest="columnNames", default="", help="Rename the columns to the names in this list (Comma separated)")
@@ -397,14 +397,18 @@ def valueIsValid(value):
 
 def normaliseData(processedData, justify, normalizeTo, decimals):
     
-    val = normalizeTo.split(",")
-    try:
-        normToCol = int(val[0])
+    if normalizeTo != "max":
+        val = normalizeTo.split(",")
+        try:
+            normToCol = int(val[0])
+            normToRow = -1
+            if len(val) > 1:
+                normToRow = int(val[1])
+        except:
+            fatal("Cannot parse normalize to specification "+normalizeTo)
+    else:
+        normToCol = -1
         normToRow = -1
-        if len(val) > 1:
-            normToRow = int(val[1])
-    except:
-        fatal("Cannot parse normalize to specification "+normalizeTo)
     
     if normToRow != -1:
         if not valueIsValid(processedData[normToRow][normToCol]):
@@ -415,7 +419,11 @@ def normaliseData(processedData, justify, normalizeTo, decimals):
     
     for i in range(len(processedData))[1:]:
         
-        if normToRow == -1:
+        if normToRow == -1 and normToCol == -1:
+            print processedData[i]
+            normTo = max([float(v) for v in processedData[i]])
+            print normTo
+        elif normToRow == -1:
             if not valueIsValid(processedData[i][normToCol]):
                 fatal("Value "+str(processedData[i][normToCol])+" is invalid. Cannot normalize to column "+str(normToCol))
             normTo = float(processedData[i][normToCol])
