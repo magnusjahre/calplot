@@ -420,7 +420,7 @@ def normaliseData(processedData, justify, normalizeTo, decimals):
     for i in range(len(processedData))[1:]:
         
         if normToRow == -1 and normToCol == -1:
-            normTo = max([float(v) for v in processedData[i]])
+            normTo = max([float(v) for v in processedData[i][1:]])
         elif normToRow == -1:
             if not valueIsValid(processedData[i][normToCol]):
                 fatal("Value "+str(processedData[i][normToCol])+" is invalid. Cannot normalize to column "+str(normToCol))
