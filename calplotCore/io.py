@@ -16,6 +16,8 @@ def readDataFile(datafile, columns, onlyWlType):
     data = []
     for l in datafile:
         rawline = l.strip().split()
+        if rawline == []:
+            continue
         tmp = [rawline[0]]
         
         error = False
