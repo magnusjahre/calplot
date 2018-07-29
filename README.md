@@ -12,11 +12,28 @@ For the scripts to work, you must first install:
  * Python version 2.7 or newer (Note that calplot does not work with Python version 3)
  * Matplotib (https://matplotlib.org)
  * Latex
+ * Git
 
-In addition, you need to add the calplot root directory to the *PYTHONPATH* environment variable. Adding the following to ~/.bash_profile will do the trick:
+For Ubuntu 18.04, first open a terminal. Then run the following commandline to install all prerequisites:
+```
+sudo apt-get install python python-matplotlib texlive git
+```
+
+Then, clone calplot using the following command:
+```
+git clone https://github.com/magnusjahre/calplot.git
+```
+
+In addition, you need to add the calplot root directory to the *PYTHONPATH* environment variable. Adding the following to ~/.bash_rc on Linux (~/.bash_profile on Mac OS) and restarting the terminal will do the trick:
 ```
 export CALPLOTPATH=[INSERT_CALPLOT_PATH_HERE]/calplot
 export PYTHONPATH=$PYTHONPATH:$CALPLOTPATH
+```
+
+Finally, enter the calplot directory and run the tests to verify that the scripts work as intended:
+```
+cd calplot
+./runTests.sh
 ```
 
 ## Using Calplot
