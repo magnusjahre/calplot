@@ -24,7 +24,7 @@ Then, clone calplot using the following command:
 git clone https://github.com/magnusjahre/calplot.git
 ```
 
-In addition, you need to add the calplot root directory to the *PYTHONPATH* environment variable. Adding the following to ~/.bash_rc on Linux (~/.bash_profile on Mac OS) and restarting the terminal will do the trick:
+In addition, you need to add the calplot root directory to the *PYTHONPATH* environment variable. Adding the following to \~/.bashrc on Linux (\~/.bash_profile on Mac OS\) and restarting the terminal will do the trick:
 ```
 export CALPLOTPATH=[INSERT_CALPLOT_PATH_HERE]/calplot
 export PYTHONPATH=$PYTHONPATH:$CALPLOTPATH
