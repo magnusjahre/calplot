@@ -6,6 +6,9 @@ Created on May 15, 2018
 @author: jahre
 '''
 
+import matplotlib
+matplotlib.use('Agg')
+
 from optparse import OptionParser
 from calplotCore import fatal
 from calplotCore.io import readDataFile, createDataSeries
