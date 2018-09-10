@@ -7,6 +7,7 @@ from optparse import OptionParser
 
 from calplotCore import fatal, warn, numberToString, isInt, NO_DATA_STRING, TYPED_WORKLOAD_IDENTIFIERS, ERROR_STRING
 from calplotCore.io import readFilesForMerge, printData
+from gc import disable
 
 def parseArgs():
     parser = OptionParser(usage="calmerge.py [options] FILENAME [FILENAME ...]")
@@ -172,12 +173,13 @@ def renameRows(mergedData, opts):
                 print "Renaming row "+mergedData[i][0]+" to "+newrownames[i]
             mergedData[i][0] = newrownames[i]
 
-def filterData(mergedData, filterPattern):
+def filterData(mergedData, filterPattern, disableRowSort):
     if filterPattern == "":
         return mergedData
     
     header = mergedData[0]
     newdata = {}
+    orderedKeys = []
     for i in range(len(mergedData))[1:]:
         if re.search(filterPattern, mergedData[i][0]):
             thisKey = mergedData[i][0] 
@@ -185,8 +187,12 @@ def filterData(mergedData, filterPattern):
                 thisKey = int(thisKey)
             
             newdata[thisKey] = mergedData[i]
-    
-    newdatakeys = sorted(newdata.keys())
+            orderedKeys.append(thisKey)
+
+    if disableRowSort:
+        newdatakeys = orderedKeys
+    else:
+        newdatakeys = sorted(newdata.keys())
     
     printData = []
     printData.append(header)
@@ -195,7 +201,7 @@ def filterData(mergedData, filterPattern):
     
     return printData
 
-def processData(mergedData, mergeSpec, filterPattern):
+def processData(mergedData, mergeSpec, filterPattern, disableRowSort):
     
     if mergeSpec != []:
         newData = []
@@ -206,7 +212,7 @@ def processData(mergedData, mergeSpec, filterPattern):
             newData.append(newLine)
         mergedData = newData
     
-    mergedData = filterData(mergedData, filterPattern)
+    mergedData = filterData(mergedData, filterPattern, disableRowSort)
     
     justify = [False for i in range(len(mergedData[0]))]
     justify[0] = True
@@ -507,7 +513,7 @@ def main():
     else:
         doColor = False
     
-    processedData, justify = processData(mergedData, printSpec, opts.filterPattern)
+    processedData, justify = processData(mergedData, printSpec, opts.filterPattern, opts.disableRowSort)
     if opts.splitWlTypes:
         processedData, justify = splitWlTypes(processedData)
     
