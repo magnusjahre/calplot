@@ -24,12 +24,12 @@ class Test(unittest.TestCase):
     def testNormalization(self):
         fileData = readFilesForMerge(["calplotTest/testfiles/merge-test-input.txt"], "\s+", "", False)
         mergedData, columnToFileList = mergeData(fileData, False, True)
-        processedData, justify = processData(mergedData, [], "")
+        processedData, justify = processData(mergedData, [], "", False)
         processedData, justify = normaliseData(processedData, justify, "1", 2)
 
         correctData = readFilesForMerge(["calplotTest/testfiles/merge-test-output.txt"], "\s+", "", False)
         mergedCorrectData, columnToFileList = mergeData(correctData, False, True)
-        processedCorrectData, justify = processData(mergedCorrectData, [], "")
+        processedCorrectData, justify = processData(mergedCorrectData, [], "", False)
         
         self.compare(processedData, processedCorrectData)
 
