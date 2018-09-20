@@ -81,6 +81,10 @@ def addLabelsAndSeparators(ax, kwargs):
             plt.ylim(miny,maxy)
             ymax = maxy
     
+    if "numYTicks" in kwargs:
+        if int(kwargs["numYTicks"]) != -1:
+            ax.yaxis.set_major_locator(plt.LinearLocator(int(kwargs["numYTicks"])))
+    
     if "separators" in kwargs:
         if kwargs["separators"] != "":
             coords = [float(i) for i in kwargs["separators"].split(",")]

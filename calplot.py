@@ -48,6 +48,7 @@ def parseArgs():
     parser.add_option("--linemarkers", action="store", dest="linemarkers", type="string", default="", help="Add line markers at these y-values, comma separated")
     parser.add_option("--labels", action="store", dest="labels", type="string", default="", help="Add labels  at these coordinates, x,y,text,rotation[:x,y,text,rotation]")
     parser.add_option("--fill-background", action="store", dest="fillBackground", type="string", default="", help="Fill the background between x-ranges x1,x2[:xi,yj]")
+    parser.add_option("--num-yticks", action="store", dest="numYTicks", type="int", default=-1, help="Force N y-axis tick marks and labels.")
 
     opts, args = parser.parse_args()
     
@@ -136,7 +137,8 @@ def main():
                  "linemarkers": opts.linemarkers,
                  "labels": opts.labels,
                  "fillBackground": opts.fillBackground,
-                 "largeFonts": opts.largeFonts}
+                 "largeFonts": opts.largeFonts,
+                 "numYTicks": opts.numYTicks}
     
     if opts.plotType == "lines":
         
