@@ -36,6 +36,16 @@ cd calplot
 ./runTests.sh
 ```
 
+You might get the following error if you are trying to run calplot remotely:
+```
+TclError: no display name and no $DISPLAY environment variable
+```
+
+If so, you should direct your matplotlib installation to use the Agg backend by running the following command:
+```
+echo "backend: Agg" >> ~/.config/matplotlib/matplotlibrc
+```
+
 ## Using Calplot
 
 The basic operation is as follows:
