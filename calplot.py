@@ -7,7 +7,6 @@ Created on May 15, 2018
 '''
 
 import matplotlib
-#matplotlib.use('Agg')
 
 from optparse import OptionParser
 from calplotCore import fatal
@@ -115,8 +114,6 @@ def main():
     
     if opts.outfile != None:
         print "Plotting data to file "+opts.outfile+"..."
-    else:
-        print "Showing plot..."
     
     usemode = opts.mode
     if usemode == "None":
