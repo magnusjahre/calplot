@@ -7,7 +7,7 @@ Created on May 15, 2018
 '''
 
 import matplotlib
-matplotlib.use('Agg')
+#matplotlib.use('Agg')
 
 from optparse import OptionParser
 from calplotCore import fatal

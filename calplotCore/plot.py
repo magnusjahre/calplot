@@ -125,7 +125,10 @@ def processOutput(kwargs):
         if kwargs["filename"] != None:
             plt.savefig(kwargs["filename"], type="pdf", bbox_inches='tight')
             return
-    plt.show()
+    try:
+        plt.show()
+    except:
+        print "https://matplotlib.org/3.1.0/tutorials/introductory/usage.html"
 
 def addLegend(ax, plottedItems, legendNames, kwargs):
 
