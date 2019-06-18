@@ -199,9 +199,10 @@ def plotLines(xvalues, ydataseries, **kwargs):
                     ydataseries[i][j] = ydataseries[i][j] / kwargs["divFactor"]
     
     lines = []
+    useMarkers = ['o', 'v', '^', '<', '>', 's', '*', 'D', 'd', 'P', 'X', 'p', '8']
     for i in range(len(ydataseries)):
-        thisColor = cm.Paired(1*(float(i)/float(len(ydataseries))))
-        thisMarker = MarkerStyle.filled_markers[i]
+        thisColor = cm.Dark2(1*(float(i)/float(len(ydataseries))))
+        thisMarker = useMarkers[i%len(useMarkers)]
         lines += ax.plot([float(x) for x in xvalues], ydataseries[i], color=thisColor, marker=thisMarker, markevery=markEvery)
     
     labels = None
