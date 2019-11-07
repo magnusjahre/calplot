@@ -3,7 +3,7 @@ Created on May 15, 2018
 
 @author: jahre
 '''
-
+import csv
 import re
 from calplotCore import fatal, NO_DATA_STRING, warn, normalize, isFloat
 
@@ -13,10 +13,21 @@ colorSuffix = '\033[1;m'
 
 
 def readDataFile(datafile, columns, onlyWlType):
-    header = datafile.readline().strip().split()
+    useCsv = datafile.name.endswith(".csv")
+    if useCsv:
+        datafile = csv.reader(datafile, delimiter=";")
+        header = next(datafile)
+    else:
+        header = datafile.readline().strip().split()
+
     data = []
     for l in datafile:
-        rawline = l.strip().split()
+        if useCsv:
+            rawline = l
+        else:
+            rawline = l.strip().split()
+
+        print(rawline)
         if rawline == []:
             continue
         tmp = [rawline[0]]
