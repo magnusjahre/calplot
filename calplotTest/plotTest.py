@@ -5,29 +5,27 @@ Created on May 16, 2018
 '''
 import unittest
 import os
-import sys
 from calplotCore.io import readDataFile, createDataSeries
 from calplotCore.plot import scatterPlot, plotLines, boxPlot, violinPlot, barChart
 
-class Test(unittest.TestCase):
 
+class Test(unittest.TestCase):
     def getDataSeries(self, filename):
         f = open(filename)
         header, data = readDataFile(f, "", "")
         f.close()
         return header, createDataSeries(data, len(header), "", False, False)
-    
+
     def getOutpath(self, name):
-        return self.outdir+"/"+name
+        return f"{self.outdir}/{name}"
 
     def setUp(self):
         self.header, self.dataseries = self.getDataSeries("calplotTest/testfiles/data.txt")
         self.missingDataHeader, self.missingDataSeries = self.getDataSeries("calplotTest/testfiles/missing-data.txt")
-        
         self.outdir = "testplots"
         if not os.path.exists(self.outdir):
             os.mkdir(self.outdir)
-    
+
     def tearDown(self):
         pass
 
@@ -39,10 +37,10 @@ class Test(unittest.TestCase):
 
     def testLinePlotWithMissingData(self):
         plotLines(self.missingDataSeries[0], self.missingDataSeries[1:], titles=self.missingDataHeader, filename=self.getOutpath("lines-missing.pdf"))
-    
+
     def testBoxPlot(self):
         boxPlot(self.dataseries[1:], titles=self.header, filename=self.getOutpath("box.pdf"))
-    
+
     def testViolinPlot(self):
         violinPlot(self.header, self.dataseries[1:], filename=self.getOutpath("violin.pdf"))
 
@@ -52,6 +50,7 @@ class Test(unittest.TestCase):
     def testBarChartWithMissingData(self):
         barChart(self.missingDataSeries[0], self.missingDataSeries[1:], self.missingDataHeader, filename=self.getOutpath("bars-missing.pdf"))
 
+
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
+    # import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

@@ -9,14 +9,14 @@ Although Calplot in theory should be cross-platform, it is currently only tested
 ## Setting up Calplot
 
 For the scripts to work, you must first install:
- * Python version 2.7 or newer (Note that calplot does not work with Python version 3)
+ * Python version 3.6 or newer
  * Matplotib (https://matplotlib.org)
  * Latex (with fonts and dvipng)
  * Git
 
 For Ubuntu 18.04, first open a terminal. Then run the following commandline to install all prerequisites:
 ```
-sudo apt-get install python python-matplotlib python-tk texlive texlive-latex-extra dvipng git
+sudo apt-get install python3 python3-matplotlib python3-tk texlive texlive-latex-extra dvipng git
 ```
 
 Then, clone calplot using the following command:
