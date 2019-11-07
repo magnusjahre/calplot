@@ -10,8 +10,6 @@ from optparse import OptionParser
 from calplotCore import fatal
 from calplotCore.io import readDataFile, createDataSeries
 from calplotCore.plot import boxPlot, plotLines, barChart, violinPlot, scatterPlot
-import matplotlib
-matplotlib.use('Agg')
 
 
 def parseArgs():
