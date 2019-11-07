@@ -6,13 +6,13 @@ Created on May 15, 2018
 @author: jahre
 '''
 
-import matplotlib
-matplotlib.use('Agg')
-
 from optparse import OptionParser
 from calplotCore import fatal
 from calplotCore.io import readDataFile, createDataSeries
 from calplotCore.plot import boxPlot, plotLines, barChart, violinPlot, scatterPlot
+import matplotlib
+matplotlib.use('Agg')
+
 
 def parseArgs():
     parser = OptionParser(usage="calplot.py [options] filename")
@@ -24,7 +24,7 @@ def parseArgs():
     parser.add_option("--legend-columns", action="store", dest="legendColumns", type="int", default=2, help="Number of columns in legend")
     parser.add_option("--legend-bbox-height", action="store", dest="legendBBoxHeight", type="float", default=0.0, help="Manually set the height of the bbox legend to this value.")
     parser.add_option("--outfile", action="store", dest="outfile", type="string", default=None, help="Output filename (Default: plot.pdf)")
-    parser.add_option("--plot-type", action="store", dest="plotType", type="string", default="bars", help="Output filename (Default: bars, alternatives "+str(plotTypes)+")")
+    parser.add_option("--plot-type", action="store", dest="plotType", type="string", default="bars", help=f"Output filename (Default: bars, alternatives {plotTypes}")
     parser.add_option("-y", "--ytitle", action="store", dest="ytitle", type="string", default="Y axis title", help="Y axis title")
     parser.add_option("-x", "--xtitle", action="store", dest="xtitle", type="string", default="X axis title", help="X axis title")
     parser.add_option("--yrange", action="store", dest="yrange", type="string", default=None, help="Comma separated min,max pair")
@@ -51,60 +51,61 @@ def parseArgs():
     parser.add_option("--num-yticks", action="store", dest="numYTicks", type="int", default=-1, help="Force N y-axis tick marks and labels.")
 
     opts, args = parser.parse_args()
-    
+
     datafiles = []
     for a in args:
         try:
             datafiles.append(open(a))
-        except:
+        except Exception:
             try:
-                fatal("Cannot open file "+str(a))
-            except:
-                print parser.usage
+                fatal(f"Cannot open file {a}")
+            except Exception:
+                print(parser.usage)
                 fatal("Command line error")
-    
+
     if datafiles == []:
         fatal("The name of at least one data file needs to be supplied")
-    
+
     if opts.plotType not in plotTypes:
-        fatal("Plot type needs to be one of "+str(plotTypes))
-    
+        fatal(f"Plot type needs to be one of {plotTypes}")
+
     if opts.plotType != "boxplot" and len(datafiles) > 1:
         fatal("Plotting of multiple data files only make sense for boxplots")
-    
+
     return opts, args, datafiles
+
 
 def generatePlotCommand(data):
     cmd = ["calplot.py"]
     cmd.append("--plot-type")
     cmd.append(data["type"])
     cmd.append("-y")
-    cmd.append('"'+data["ytitle"]+'"')
+    cmd.append(f'"{data["ytitle"]}"')
     cmd.append("-x")
-    cmd.append('"'+data["xtitle"]+'"')
+    cmd.append(f'"{data["xtitle"]}"')
     for o in data["opts"]:
         cmd.append(o)
 
     cmd.append("--outfile")
     cmd.append(data["output"])
     cmd.append(data["input"])
-    
+
     return " ".join(cmd)
 
-def main():
 
+def main():
     opts, args, datafiles = parseArgs()
-    
-    print "Data file plot script"
-    
+
+    print("Data file plot script")
+
     dataseries = []
     header = []
     for i in range(len(datafiles)):
-        print "Processing file plot of file "+args[i]
-        
+        print(f"Processing file plot of file {args[i]}")
+
         header, rawData = readDataFile(datafiles[i], opts.columns, opts.onlyType)
         dataseries = createDataSeries(rawData, len(header), opts.plotType, opts.fixWls, opts.onlyWlNum)
-    
+
     if opts.avg:
         for i in range(len(dataseries)):
             if i == 0:
@@ -112,16 +113,16 @@ def main():
             else:
                 avg = float(sum(dataseries[i])) / float(len(dataseries[i]))
                 dataseries[i].append(avg)
-    
-    if opts.outfile != None:
-        print "Plotting data to file "+opts.outfile+"..."
+
+    if opts.outfile is not None:
+        print(f"Plotting data to file {opts.outfile}...")
     else:
-        print "Showing plot..."
-    
+        print("Showing plot...")
+
     usemode = opts.mode
     if usemode == "None":
         usemode = None
-    
+
     kwargDict = {"filename": opts.outfile,
                  "xlabel": opts.xtitle,
                  "ylabel": opts.ytitle,
@@ -139,42 +140,43 @@ def main():
                  "fillBackground": opts.fillBackground,
                  "largeFonts": opts.largeFonts,
                  "numYTicks": opts.numYTicks}
-    
+
     if opts.plotType == "lines":
-        
+
         kwargDict["divFactor"] = opts.divFactor
         kwargDict["markEvery"] = opts.markEvery
-        
+
         plotLines(dataseries[0], dataseries[1:],
                   titles=header,
                   **kwargDict)
-        
+
     elif opts.plotType == "bars":
         kwargDict["errorrows"] = opts.errorrows
         kwargDict["errorcols"] = opts.errorcols
-        
+
         barChart(dataseries[0],
                  dataseries[1:],
                  header,
                  **kwargDict)
-    
+
     elif opts.plotType == "violin":
         violinPlot(header,
                    dataseries[1:],
                    **kwargDict)
-    
+
     elif opts.plotType == "scatter":
         scatterPlot(dataseries[1],
                     dataseries[2],
                     legend=dataseries[0],
-                    **kwargDict) 
+                    **kwargDict)
     else:
         assert opts.plotType == "boxes"
         boxPlot(dataseries[1:],
                 titles=header,
                 **kwargDict)
 
-    print "Done!"
+    print("Done!")
+
 
 if __name__ == '__main__':
     main()

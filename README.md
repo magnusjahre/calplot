@@ -16,7 +16,7 @@ For the scripts to work, you must first install:
 
 For Ubuntu 18.04, first open a terminal. Then run the following commandline to install all prerequisites:
 ```
-sudo apt-get install python python-matplotlib python-tk texlive texlive-latex-extra dvipng git
+sudo apt-get install python4 python4-matplotlib python4-tk texlive texlive-latex-extra dvipng git
 ```
 
 Then, clone calplot using the following command:
