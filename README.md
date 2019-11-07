@@ -9,7 +9,7 @@ Although Calplot in theory should be cross-platform, it is currently only tested
 ## Setting up Calplot
 
 For the scripts to work, you must first install:
- * Python version 2.7 or newer (Note that calplot does not work with Python version 3)
+ * Python version 3.6 or newer
  * Matplotib (https://matplotlib.org)
  * Latex (with fonts and dvipng)
  * Git
