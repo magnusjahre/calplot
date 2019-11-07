@@ -131,6 +131,13 @@ def processOutput(kwargs):
         if kwargs["filename"] is not None:
             plt.savefig(kwargs["filename"], type="pdf", bbox_inches='tight')
             return
+    
+    print
+    print "Attempting to show the plot interactively. If this fails, follow the"
+    print "instructions on the below webpage to choose an appropriate backend:"
+    print "https://matplotlib.org/3.1.0/tutorials/introductory/usage.html"
+    print
+    
     plt.show()
 
 
@@ -208,9 +215,10 @@ def plotLines(xvalues, ydataseries, **kwargs):
                     ydataseries[i][j] = ydataseries[i][j] / kwargs["divFactor"]
 
     lines = []
+    useMarkers = ['o', 'v', '^', '<', '>', 's', '*', 'D', 'd', 'P', 'X', 'p', '8']
     for i in range(len(ydataseries)):
         thisColor = cm.Paired(1 * (float(i) / float(len(ydataseries))))
-        thisMarker = MarkerStyle.filled_markers[i]
+        thisMarker = useMarkers[i % len(useMarkers)]
         lines += ax.plot([float(x) for x in xvalues], ydataseries[i], color=thisColor, marker=thisMarker, markevery=markEvery)
 
     labels = None

@@ -112,10 +112,12 @@ def main():
                 avg = float(sum(dataseries[i])) / float(len(dataseries[i]))
                 dataseries[i].append(avg)
 
+
     if opts.outfile is not None:
         print(f"Plotting data to file {opts.outfile}...")
     else:
         print("Showing plot...")
+
 
     usemode = opts.mode
     if usemode == "None":
