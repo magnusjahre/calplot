@@ -131,13 +131,11 @@ def processOutput(kwargs):
         if kwargs["filename"] is not None:
             plt.savefig(kwargs["filename"], type="pdf", bbox_inches='tight')
             return
-    
-    print
-    print "Attempting to show the plot interactively. If this fails, follow the"
-    print "instructions on the below webpage to choose an appropriate backend:"
-    print "https://matplotlib.org/3.1.0/tutorials/introductory/usage.html"
-    print
-    
+
+    print("\nAttempting to show the plot interactively. If this fails, follow the")
+    print("instructions on the below webpage to choose an appropriate backend:")
+    print("https://matplotlib.org/3.1.0/tutorials/introductory/usage.html\n")
+
     plt.show()
 
 
