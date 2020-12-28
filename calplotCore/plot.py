@@ -81,6 +81,16 @@ def addLabelsAndSeparators(ax, kwargs):
             plt.ylim(miny,maxy)
             ymax = maxy
     
+    if "xrange" in kwargs:
+        if kwargs["xrange"] != None:
+            try:
+                minx,maxx = kwargs["xrange"].split(",")
+                minx = float(minx)
+                maxx = float(maxx)
+            except:
+                raise Exception("Could not parse yrange string "+str(kwargs["yrange"]))    
+            plt.xlim(minx,maxx)
+    
     if "numYTicks" in kwargs:
         if int(kwargs["numYTicks"]) != -1:
             ax.yaxis.set_major_locator(plt.LinearLocator(int(kwargs["numYTicks"])))
